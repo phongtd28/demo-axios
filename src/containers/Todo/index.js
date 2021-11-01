@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { createSelector } from "reselect";
 import Form from "../../components/Form";
 import ListTodo from "../../components/ListTodo";
 import { TodoWrapper } from "./style";
@@ -6,47 +7,47 @@ import {
   addTodo,
   deleteTodo,
   updateTodo,
-  searchTodo,
-  updateListTodos,
+  fetchTodos,
+  handleTest,
+  test,
 } from "./actions";
 import { connect } from "react-redux";
 import axios from "axios";
 import { v4 } from "uuid";
+import Loading from "../../components/commons/Loading";
 
 const Todo = ({
+  loading,
   todos,
-  todoSearch,
   handleAddTodo,
   handleDeleteTodo,
-  handleSearchTodo,
   handleUpdateTodo,
-  handleUpdateListTodo,
+  handleFetchTodos,
+  handleTest,
 }) => {
   useEffect(() => {
-    axios
-      .get(`https://60f7c7909cdca00017454fc0.mockapi.io/todo`)
-      .then((listTodo) => handleUpdateListTodo(listTodo.data))
-      .catch((err) => console.log(new Error(err + "")));
+    // getdata();
+    handleFetchTodos();
   }, []);
-
   const [todo, setTodo] = useState({
     id: "",
     title: "",
     content: "",
   });
   const [isEdit, setIsEdit] = useState(false);
-  const [keySearch, setKeySearch] = useState("");
+  const [keySearch, setKeySearch] = useState();
+  const [listSearch, setListSearch] = useState(null);
 
   const onAddTodo = async () => {
-    const id = v4();
-    const newTodo = { ...todo, id: `${id}` };
+    const newTodo = { ...todo, id: v4() };
 
-    await axios
-      .post(`https://60f7c7909cdca00017454fc0.mockapi.io/todo`, newTodo)
-      .then((rs) => handleAddTodo(newTodo))
-      .then((rs) => clearTodo())
+    // await axios
+    //   .post(`https://60f7c7909cdca00017454fc0.mockapi.io/todo`, newTodo)
+    //   .then((rs) => handleAddTodo(newTodo))
+    //   .then((rs) => clearTodo())
 
-      .catch((err) => console.log(new Error(err + "llll")));
+    //   .catch((err) => console.log(new Error(err + "llll")));
+    handleAddTodo(newTodo);
   };
   const clearTodo = () => {
     setTodo({ id: "", title: "", content: "" });
@@ -60,24 +61,25 @@ const Todo = ({
   };
   const onEditTodo = (todo) => {
     setIsEdit(!isEdit);
-    // console.log({ todo });
     setTodo(todo);
   };
   const onDeleteTodo = async (id) => {
-    await axios
-      .delete(`https://60f7c7909cdca00017454fc0.mockapi.io/todo/${id}`)
-      .then(() => handleDeleteTodo(id))
-      .catch((err) => console.log(new Error(err + "")));
+    // await axios
+    //   .delete(`https://60f7c7909cdca00017454fc0.mockapi.io/todo/${id}`)
+    //   .then(() => handleDeleteTodo(id))
+    //   .catch((err) => console.log(new Error(err + "")));
+    handleDeleteTodo(id);
   };
   const onUpdateTodo = async () => {
-    await axios
-      .put(`https://60f7c7909cdca00017454fc0.mockapi.io/todo/${todo.id}`, todo)
-      .then(() => handleUpdateTodo(todo))
-      .then(() => {
-        clearTodo();
-        setIsEdit(false);
-      })
-      .catch((err) => console.log(new Error(err + "")));
+    // await axios
+    //   .put(`https://60f7c7909cdca00017454fc0.mockapi.io/todo/${todo.id}`, todo)
+    //   .then(() => handleUpdateTodo(todo))
+    //   .then(() => {
+    //     clearTodo();
+    //     setIsEdit(false);
+    //   })
+    //   .catch((err) => console.log(new Error(err + "")));
+    handleUpdateTodo(todo);
   };
   const onCancelUpdate = () => {
     setIsEdit(false);
@@ -86,13 +88,26 @@ const Todo = ({
   const onChangeSearch = (e) => {
     setKeySearch(e.target.value);
   };
-  console.log({ keySearch });
-  console.log({ todoSearch });
+  const handleSearchTodo = (key) => {
+    const listSearch = [...todos].filter((todo) => {
+      return todo.title.toLowerCase().includes(key.toLowerCase());
+    });
+    setListSearch(listSearch);
+  };
   useEffect(() => {
     handleSearchTodo(keySearch);
   }, [keySearch]);
+
+  const [count, setCoount] = useState(0);
+  const onTest = () => {
+    setCoount(count + 1);
+  };
+  useEffect(() => {
+    handleTest(count);
+  }, [count]);
   return (
     <TodoWrapper>
+      {loading ? <Loading /> : ""}
       <Form
         todo={todo}
         isEdit={isEdit}
@@ -101,31 +116,36 @@ const Todo = ({
         onUpdateTodo={onUpdateTodo}
         onCancelUpdate={onCancelUpdate}
         onChangeSearch={onChangeSearch}
+        onTest={onTest}
       />
+
       <ListTodo
-        todos={keySearch ? todoSearch : todos}
+        todos={keySearch ? listSearch : todos}
         onDeleteTodo={onDeleteTodo}
         onEditTodo={onEditTodo}
       />
-      {/* <RenderListTodo /> */}
     </TodoWrapper>
   );
 };
 
+const getTodoSelector = createSelector(
+  (state) => state.todoReducer.todos,
+  // (state) => state.todoReducer.loading,
+  (todos) => todos
+);
 const mapStateToProps = (state) => {
-  console.log(state);
   return {
-    todos: state.todoReducer.todos,
-    todoSearch: state.todoReducer.todoSearch,
+    todos: getTodoSelector(state),
+    loading: state.todoReducer.loading,
   };
 };
 const mapDispatchToProps = (dispatch) => {
   return {
-    handleUpdateListTodo: (todos) => dispatch(updateListTodos(todos)),
+    handleFetchTodos: () => dispatch(fetchTodos()),
     handleAddTodo: (todo) => dispatch(addTodo(todo)),
     handleDeleteTodo: (id) => dispatch(deleteTodo(id)),
     handleUpdateTodo: (newTodo) => dispatch(updateTodo(newTodo)),
-    handleSearchTodo: (key) => dispatch(searchTodo(key)),
+    handleTest: (some) => dispatch(test(some)),
   };
 };
 export default connect(mapStateToProps, mapDispatchToProps)(Todo);

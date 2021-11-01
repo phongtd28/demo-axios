@@ -11,8 +11,8 @@ const Form = ({
   onChangeSearch,
   todo,
   isEdit,
+  onTest,
 }) => {
-  console.log({ todo }, "oooo");
   return (
     <FormWrapper>
       <h3>Add New Todo...</h3>
@@ -54,6 +54,7 @@ const Form = ({
       <div className="form-search">
         <Input placeholder="search title..." onChange={onChangeSearch}></Input>
       </div>
+      <Button children="test" type="primary" onClick={onTest} />
     </FormWrapper>
   );
 };

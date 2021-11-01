@@ -1,5 +1,4 @@
 import React from "react";
-import { createGlobalStyle } from "styled-components";
 import Button from "../commons/Button";
 import { ListTodoWrapper } from "./style";
 

@@ -1,5 +1,15 @@
 export const ADD_TODO = "ADD_TODO";
+export const ADD_TODO_SUCCESS = "ADD_TODO_SUCCESS";
+export const ADD_TODO_ERR = "ADD_TODO_ERR";
 export const DELETE_TODO = "DELETE_TODO";
 export const UPDATE_TODO = "UPDATE_TODO";
+export const UPDATE_TODO_SUCCESS = "UPDATE_TODO_SUCCESS";
+export const UPDATE_TODO_ERR = "UPDATE_TODO_ERR";
+
 export const SEARCH_TODO = "SEARCH_TODO";
-export const UPDATE_LIST_TODO = "UPDATE_LIST_TODO";
+export const FETCH_TODOS = "FETCH_TODOS";
+export const FETCH_TODOS_SUCCESS = "FETCH_TODOS_SUCCESS";
+export const FETCH_TODOS_ERR = "FETCH_TODOS_ERR";
+export const TEST = "TEST";
+export const DELETE_TODO_SUCCESS = "DELETE_TODO_SUCCESS";
+export const DELETE_TODO_ERR = "DELETE_TODO_ERR";
