@@ -12,7 +12,6 @@ import {
   test,
 } from "./actions";
 import { connect } from "react-redux";
-import axios from "axios";
 import { v4 } from "uuid";
 import Loading from "../../components/commons/Loading";
 
